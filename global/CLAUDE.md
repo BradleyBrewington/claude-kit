@@ -44,6 +44,9 @@ every iteration; after compaction, re-read the task file and spec in full first.
   one line.
 - Floor: if I correct you twice on the same thing, point it out and propose the exact
   line so it never happens again.
+- Garbage-collect: every proposed addition must also check for a stale or subsumed
+  existing line and propose its deletion. Pruning test for any line: "would removing
+  this cause mistakes?" If not, it goes.
 
 ## Communication
 
