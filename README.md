@@ -38,9 +38,22 @@ bash install.sh
 Re-run any time you edit the kit. Existing `~/.claude/CLAUDE.md` content is backed up
 to `~/.claude/backups/` before being replaced (unless it's already the kit's file).
 
+## Two modes
+
+Every ask is triaged by **blast radius × verifiability**, and Claude states the mode
+in one line before starting (veto any time):
+
+- **Delegation (default)** — contained blast radius + a feedback loop Claude can run
+  itself (tests, build, browser). Vague to-dos and vibe changes handled with standing
+  professional judgment (security, perf, tests, maintainability — see the judgment
+  charter in `global/CLAUDE.md`). Ends with a PR-style summary including judgment
+  calls made.
+- **Rigor** — wide blast radius, hard to verify, irreversible, or touches
+  auth/payments/data/money → `/spec` → `/task`, as below.
+
 ## Usage
 
-Day-to-day loop in any project:
+Day-to-day loop in any project (rigor mode):
 
 ```
 /spec dark mode toggle          # Claude interviews you, writes docs/specs/<date>-dark-mode.md
@@ -57,7 +70,9 @@ To resume an interrupted or compacted task (same session or a fresh one):
 
 ## Roadmap
 
-- **Phase 1 (this):** `/spec`, `/task`, global CLAUDE.md, installer
+- **Phase 1:** `/spec`, `/task`, global CLAUDE.md, installer
+- **Phase 1.5 (this):** delegation mode — triage rule (blast radius × verifiability),
+  judgment charter, PR-style reporting, compounding rule
 - **Phase 2:** `/new-project` (interview → PRODUCT.md → scaffold → gh repo), `/ship`, `/review` (fresh-context PR review)
 - **Phase 3:** `/qa-journey` (project-agnostic polish loop driven by a per-project `docs/journeys.md` manifest), enforcement hooks in settings.json, PR evidence template
 - **Phase 4:** scheduled agents (nightly QA, CI-side review via GitHub Actions)
