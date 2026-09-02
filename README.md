@@ -24,6 +24,8 @@ claude-kit/
 ├── install.sh          # copies everything into ~/.claude (idempotent, re-runnable)
 ├── global/
 │   └── CLAUDE.md       # → ~/.claude/CLAUDE.md — personal invariants, loaded in every session
+├── powershell/
+│   └── profile.ps1     # canonical PowerShell profile: cc/ccd, smart cd dev, snag
 └── skills/
     ├── spec/           # /spec — interview → spec with acceptance criteria
     └── task/           # /task — durable task file + compaction-proof execution loop
@@ -37,6 +39,24 @@ bash install.sh
 
 Re-run any time you edit the kit. Existing `~/.claude/CLAUDE.md` content is backed up
 to `~/.claude/backups/` before being replaced (unless it's already the kit's file).
+
+### PowerShell profile (Windows)
+
+The real profile logic lives in `powershell/profile.ps1` (git-synced — never edit the
+OneDrive copy). On a new machine, make `$PROFILE` a stub that loads it:
+
+```powershell
+@'
+# Stub — real profile lives in the claude-kit repo. Edit there, not here.
+$kitProfile = 'C:\dev\claude-kit\powershell\profile.ps1'
+if (Test-Path $kitProfile) { . $kitProfile }
+else { Write-Warning "claude-kit profile not found: $kitProfile" }
+'@ | Set-Content -Path $PROFILE -Force
+```
+
+Commands it provides: `cc <query>` (fuzzy-cd to a project and launch Claude Code),
+`ccd <query>` (fuzzy-cd only), `cd dev` / `dev` (jump to C:\dev and list projects),
+`snag [pattern] [count]` (move recent files from Downloads into the current folder).
 
 ## Two modes
 
