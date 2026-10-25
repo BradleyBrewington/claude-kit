@@ -94,3 +94,34 @@ function snag {
     foreach ($f in $files) { Move-Item -LiteralPath $f.FullName -Destination . }
     Write-Host "Moved $($files.Count) file(s)."
 }
+
+# --- codex: self-healing launcher -----------------------------------------
+# Codex's daemon.pid survives reboots; if the PID gets reused by a SYSTEM
+# process, `codex` fails with "failed to open daemon process: Access is
+# denied (os error 5)". Repair-CodexDaemon.ps1 clears such stale records.
+# It runs (1) before every `codex` call and (2) at every logon via a
+# per-user scheduled task that this profile registers if it is missing.
+$script:CodexRepair = Join-Path $PSScriptRoot 'Repair-CodexDaemon.ps1'
+$script:CodexShim   = Join-Path $env:APPDATA 'npm\codex.ps1'
+
+function codex {
+    if (Test-Path $script:CodexRepair) { & $script:CodexRepair -Quiet }
+    if ($MyInvocation.ExpectingInput) { $input | & $script:CodexShim @args }
+    else { & $script:CodexShim @args }
+    $global:LASTEXITCODE = $LASTEXITCODE
+}
+
+function Register-CodexDaemonRepairTask {
+    $name = 'Codex daemon repair (logon)'
+    if (-not (Test-Path $script:CodexRepair)) { return }
+    $existing = Get-ScheduledTask -TaskName $name -ErrorAction SilentlyContinue
+    if ($existing -and $existing.Actions[0].Arguments -like "*$($script:CodexRepair)*") { return }
+    try {
+        $action  = New-ScheduledTaskAction -Execute 'powershell.exe' `
+            -Argument "-NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$($script:CodexRepair)`" -Quiet"
+        $trigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
+        $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit (New-TimeSpan -Minutes 2)
+        Register-ScheduledTask -TaskName $name -Action $action -Trigger $trigger -Settings $settings -Force | Out-Null
+    } catch { Write-Warning "Could not register '$name': $($_.Exception.Message)" }
+}
+Register-CodexDaemonRepairTask
