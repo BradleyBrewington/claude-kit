@@ -102,12 +102,20 @@ function snag {
 # It runs (1) before every `codex` call and (2) at every logon via a
 # per-user scheduled task that this profile registers if it is missing.
 $script:CodexRepair = Join-Path $PSScriptRoot 'Repair-CodexDaemon.ps1'
-$script:CodexShim   = Join-Path $env:APPDATA 'npm\codex.ps1'
 
 function codex {
+    # Resolve at invocation time so npm/native install changes do not leave a
+    # stale path. Exclude functions to avoid resolving this wrapper recursively.
+    $launcher = Get-Command codex.exe,codex.cmd,codex.ps1 -CommandType Application,ExternalScript -ErrorAction SilentlyContinue |
+        Select-Object -First 1 -ExpandProperty Source
+    if (-not $launcher) {
+        $nativeLauncher = Join-Path $env:LOCALAPPDATA 'Programs\OpenAI\Codex\bin\codex.exe'
+        if (Test-Path -LiteralPath $nativeLauncher -PathType Leaf) { $launcher = $nativeLauncher }
+        else { throw 'Codex CLI launcher not found. Check the Codex installation and PATH.' }
+    }
     if (Test-Path $script:CodexRepair) { & $script:CodexRepair -Quiet }
-    if ($MyInvocation.ExpectingInput) { $input | & $script:CodexShim @args }
-    else { & $script:CodexShim @args }
+    if ($MyInvocation.ExpectingInput) { $input | & $launcher @args }
+    else { & $launcher @args }
     $global:LASTEXITCODE = $LASTEXITCODE
 }
 
