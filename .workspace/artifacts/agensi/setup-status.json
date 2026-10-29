@@ -1,0 +1,14 @@
+﻿{
+    "spec_draft":  "https://www.agensi.io/dashboard/submit?draft=3849ec5c-8997-48fb-817b-771edebc4b2c",
+    "profile":  "https://www.agensi.io/creators/bradley-brewington",
+    "pending":  [
+                    "Upload ZIPs after browser extension file URL access is enabled",
+                    "User completes payout setup",
+                    "Submit listings for Agensi review"
+                ],
+    "task_draft":  "https://www.agensi.io/dashboard/submit?draft=2b4f1ff9-3fb5-4483-a55f-7ee6eaa428cd",
+    "status":  "Two cloud drafts saved; creator profile complete",
+    "price_usd_each":  5,
+    "date":  "2026-10-29",
+    "source_commit":  "ef79a00b005d348ba5f7c74073ed8fb07e3bfe7d"
+}
