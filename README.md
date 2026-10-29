@@ -28,7 +28,8 @@ claude-kit/
 │   └── profile.ps1     # canonical PowerShell profile: cc/ccd, smart cd dev, snag
 └── skills/
     ├── spec/           # /spec — interview → spec with acceptance criteria
-    └── task/           # /task — durable task file + compaction-proof execution loop
+    ├── task/           # /task — durable task file + compaction-proof execution loop
+    └── frontend-draft/ # /frontend-draft — visual edits for HTML, React, and Next.js
 ```
 
 ## Install
@@ -72,6 +73,11 @@ in one line before starting (veto any time):
   auth/payments/data/money → `/spec` → `/task`, as below.
 
 ## Usage
+
+Use `/frontend-draft <project-path>` to open a disposable visual preview. For
+React/Next/Vite, select elements, edit text or styles, and save; then tell Claude
+“apply my visual changes” to implement the saved requests in JSX/TSX and CSS.
+See [Draft Studio](skills/frontend-draft/README.md) for controls and limitations.
 
 Day-to-day loop in any project (rigor mode):
 
